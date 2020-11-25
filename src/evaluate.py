@@ -111,3 +111,4 @@ if __name__ == '__main__':
     y_preds = predict_img_folder(test_folder, teacher_model, student_model, show_img=False)
 
     r = evaluate(y_trues, y_preds, show_curve=True)
+    

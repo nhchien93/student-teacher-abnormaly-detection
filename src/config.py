@@ -8,6 +8,10 @@ RESULT_FOLDER = '../result'
 if not os.path.exists(RESULT_FOLDER):
     os.mkdir(RESULT_FOLDER)
 
-MODEL_FOLDER = '../model'
+MODEL_FOLDER = '../trained_model'
 if not os.path.exists(MODEL_FOLDER):
     os.mkdir(MODEL_FOLDER)
+
+RESNET_FOLDER = '../resnet'
+if not os.path.exists(RESNET_FOLDER):
+    os.mkdir(RESNET_FOLDER)

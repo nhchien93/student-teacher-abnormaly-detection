@@ -16,7 +16,8 @@ import config
 arg = argparse.ArgumentParser()
 arg.add_argument("-dataset", "--dataset", required=True, help="Choose dataset to train.")
 arg.add_argument("-student", "--student", default='resnet18', help="Choose dataset to train.")
-# arg.add_argument("-n", "--nstudent", required=True, help="Choose number of student to train.")
+arg.add_argument("-n", "--n", required=True, help="Choose number of student to train.")
+arg.add_argument("-epoch", "--epoch", required=True, help="Choose epoch to train.")
 args = vars(arg.parse_args())
 
 transform = transforms.Compose([
@@ -35,50 +36,56 @@ if __name__ == '__main__':
     validate_dataset = CustomDataset(path_data=val_data_folder, transform=transform)
     val_dataloader = DataLoader(validate_dataset, batch_size=1, shuffle=True, num_workers=0)
 
+    num_students = int(args['n'])
+
     teacher_model = TeacherModel().model
 
     if args['student'] == 'resnet18':
-        student_model = StudentResnetModel().model
+        students_model = [StudentResnetModel().model for i in range(num_students)]
     else:
-        student_model = StudentCustomModel().model
+        students_model = [StudentCustomModel().model for i in range(num_students)]
 
     criterion = torch.nn.MSELoss()
-    optimizer = optim.Adam(student_model.parameters(), lr=0.001)
+    optimizer = [optim.Adam(student_model.parameters(), lr=0.01) for student_model in students_model]
     training_loss_list = []
     validate_loss_list = []
 
-    EPOCHS = 2
-    for epoch in range(EPOCHS):  # loop over the dataset multiple times
-        training_loss = 0.0
-        validate_loss = 0.0
-        for i_batch_train, sample_batched in enumerate(train_dataloader):
+    EPOCHS = int(args['epoch'])
+    for i, student_model in enumerate(students_model):
+        training_loss_temp = []
+        validate_loss_temp = []
+        for epoch in range(EPOCHS):  # loop over the dataset multiple times
+            training_loss = 0.0
+            validate_loss = 0.0
+            for i_batch_train, sample_batched in enumerate(train_dataloader):
 
-            batch_images = sample_batched['image'].to(config.DEVICE)
+                batch_images = sample_batched['image'].to(config.DEVICE)
 
-            optimizer.zero_grad()
+                optimizer[i].zero_grad()
 
-            represent_teacher = teacher_model(batch_images).detach()
-            represent_student = student_model(batch_images)
+                represent_teacher = teacher_model(batch_images).detach()
+                represent_student = student_model(batch_images)
 
-            loss = criterion(represent_teacher, represent_student)
-            loss.backward()
-            optimizer.step()
+                loss = criterion(represent_teacher, represent_student)
+                loss.backward()
+                optimizer[i].step()
 
-            training_loss += loss.item() 
-        for i_batch_validate, sample_batched in enumerate(val_dataloader):
+                training_loss += loss.item() 
+            for i_batch_validate, sample_batched in enumerate(val_dataloader):
 
-            batch_images = sample_batched['image'].to(config.DEVICE)
+                batch_images = sample_batched['image'].to(config.DEVICE)
 
-            represent_teacher = teacher_model(batch_images).detach()
-            represent_student = student_model(batch_images).detach()
+                represent_teacher = teacher_model(batch_images).detach()
+                represent_student = student_model(batch_images).detach()
 
-            loss = criterion(represent_teacher, represent_student)
-            validate_loss += loss.item() 
-        print('Epoch: %d - training_loss: %.3f - validate_loss: %.3f' %(epoch + 1,  training_loss / i_batch_train, validate_loss/i_batch_validate ))
-        training_loss_list.append(training_loss / i_batch_train)
-        validate_loss_list.append(validate_loss/i_batch_validate)
+                loss = criterion(represent_teacher, represent_student)
+                validate_loss += loss.item() 
+            print('Student: %d - Epoch: %d - training_loss: %.3f - validate_loss: %.3f' %(i, epoch + 1,  training_loss / i_batch_train, validate_loss/i_batch_validate ))
+            training_loss_temp.append(training_loss / i_batch_train)
+            validate_loss_temp.append(validate_loss/i_batch_validate)
     
-    curr_time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-    model_saved_name = 'model_{}_{}.pth'.format(args['dataset'], curr_time)
-    torch.save(student_model, os.path.join(config.MODEL_FOLDER, model_saved_name))
-    utils.plot_history(training_loss_list, validate_loss_list, os.path.join(config.RESULT_FOLDER, 'history_{}_{}.png'.format(args['dataset'], curr_time)))
+
+        curr_time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+        model_saved_name = 'model_{}_{}_{}.pth'.format(i, args['dataset'], curr_time)
+        torch.save(student_model, os.path.join(config.MODEL_FOLDER, model_saved_name))
+        utils.plot_history(training_loss_list, validate_loss_list, os.path.join(config.RESULT_FOLDER, 'history_{}_{}_{}.png'.format(i, args['dataset'], curr_time)))
