@@ -85,7 +85,7 @@ def evaluate(y_trues, y_preds, show_curve=False):
         plt.ylim([0.0, 1.05])
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
-        plt.title('Receiver operating characteristic example')
+        plt.title('Student-Teacher Model Evaluate - {} Dataset'.format(args['dataset']))
         plt.legend(loc="lower right")
         plt.show()
         plt.savefig(os.path.join(config.RESULT_FOLDER, 'evaluate_{}_{}.png'.format(args['student'].split('.')[0], args['object'])))

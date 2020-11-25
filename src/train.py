@@ -88,4 +88,4 @@ if __name__ == '__main__':
         curr_time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
         model_saved_name = 'model_{}_{}_{}.pth'.format(i, args['dataset'], curr_time)
         torch.save(student_model, os.path.join(config.MODEL_FOLDER, model_saved_name))
-        utils.plot_history(training_loss_list, validate_loss_list, os.path.join(config.RESULT_FOLDER, 'history_{}_{}_{}.png'.format(i, args['dataset'], curr_time)))
+        utils.plot_history(training_loss_temp, validate_loss_temp, os.path.join(config.RESULT_FOLDER, 'history_{}_{}_{}.png'.format(i, args['dataset'], curr_time)))
