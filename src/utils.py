@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2 as cv
 
+import config
+
 transform = transforms.Compose([
     transforms.ToPILImage(),
     transforms.ToTensor(),
@@ -29,19 +31,27 @@ def predict(img, model, mean, device):
       features = torch.mean(features, axis=1)
     return features
 
-def plot_features(features, index = 0, mean = False):
+def plot_features(features, path, index = 0, mean = False):
     if mean:
         feature = features[0]
     else:
         feature = features[0,index,:,:]
-    plt.imshow(feature.cpu().detach().numpy())
+    plt.imshow(feature.to(config.DEVICE).detach().numpy())
     plt.show()
+    plt.savefig(path)
 
 def load_image_(path = "grid/test/broken/008.png"):
     img = cv.imread(path)
     img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
     img = cv.resize(img,(512,512))
     return img
+
+def cal_error_mask(teacher_feature, student_feature, threshold):
+    teacher_feature = teacher_feature.to(config.DEVICE).detach().numpy()
+    student_feature = student_feature.to(config.DEVICE).detach().numpy()
+    error = np.abs(np.subtract(teacher_feature, student_feature))
+    error[error<threshold] = 0
+    return error
 
 def plot_history(loss_train, loss_val, saved_path):
     '''
