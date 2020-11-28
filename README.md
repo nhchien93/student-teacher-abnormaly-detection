@@ -23,11 +23,11 @@ For dataset 'grid' (https://www.mvtec.com/company/research/datasets/mvtec-ad/)
 │   ├── grid  
 │   └── cable  
 ├── resnet18  
-│   ├── student_resnet18.pth
+│   ├── student_resnet18.pth    
 │   └── teacher_resnet18.pth   
 ├── trained-model   
 │   ├── model_0_grid.pth  
-│   └── model_1_grid.pth
+│   └── model_1_grid.pth    
 ├── README.md  
 ├── result 
 │   ├── grid_bent.png  
