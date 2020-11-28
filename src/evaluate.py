@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 import numpy as np
 
+from model import TeacherModel
 import config
 
 arg = argparse.ArgumentParser()
@@ -65,17 +66,38 @@ def get_predict(img_folder, teacher_model, students_model, mean=False, show_img=
         for img_name in img_names:
             print(img_name)
             img = utils.load_image(path = os.path.join(img_folder, img_name))
-            features_student = utils.predict(img, student_model, mean, device=config.DEVICE)
+            
+            teacher_features, teacher_feature_mean = utils.predict(img=img, model=teacher_model, mean=True, device=config.DEVICE)
+            teacher_features = teacher_features.to(config.DEVICE).detach().numpy()
+            teacher_feature_mean = teacher_feature_mean.to(config.DEVICE).detach().numpy()
+            
+            student_features, student_feature_mean = utils.predict(img=img, model=student_model, mean=True, device=config.DEVICE)
+            student_features = student_features.to(config.DEVICE).detach().numpy()
+            student_feature_mean = student_feature_mean.to(config.DEVICE).detach().numpy()
+            
+            teacher_feature_variances = np.abs(np.subtract(teacher_features, teacher_feature_mean))           
+            student_feature_variances = np.abs(np.subtract(student_features, student_feature_mean))
+                     
+            error_variances = np.abs(np.subtract(teacher_feature_variances, student_feature_variances))
+            error_variance_mean = np.mean(error_variances, axis=1)
+            
+            error_features = np.abs(np.subtract(teacher_features, student_features))
+            error_feature_mean = np.mean(error_features, axis=1)
+            
+            error_mask = error_feature_mean[0]
+            # error_feature_mean = np.abs(np.subtract(teacher_feature, student_feature))
+            
+            # features_student = utils.predict(img, student_model, mean, device=config.DEVICE)
 
-            features_teacher = utils.predict(img, teacher_model, mean, device=config.DEVICE)
+            # features_teacher = utils.predict(img, teacher_model, mean, device=config.DEVICE)
 
-            features_teachernp = features_teacher.to(config.DEVICE).detach().numpy()
-            features_studentnp = features_student.to(config.DEVICE).detach().numpy()
+            # features_teachernp = features_teacher.to(config.DEVICE).detach().numpy()
+            # features_studentnp = features_student.to(config.DEVICE).detach().numpy()
 
-            error = np.abs(np.subtract(features_teachernp,features_studentnp))
-            if mean == False:
-                error = np.mean(error, 1)
-            error_mask = error[0]
+            # error = np.abs(np.subtract(features_teachernp,features_studentnp))
+            # if mean == False:
+            #     error = np.mean(error, 1)
+            # error_mask = error_mask[0]
             y_preds_temp = np.concatenate((y_preds_temp, error_mask.flatten()))
             if show_img:
                 plt.figure()
@@ -123,7 +145,7 @@ def evaluate(y_trues, y_preds, show_curve=False):
     tpr = (auc.true_positives / (auc.true_positives + auc.false_negatives)).numpy()
     fpr = (auc.false_positives / (auc.false_positives + auc.true_negatives)).numpy()
     if show_curve:
-        plt.figure()
+        fig = plt.figure()
         lw = 2
         plt.plot(fpr, tpr, color='darkorange',
                 lw=lw, label='ROC curve (area = %0.2f)' % auc(fpr, tpr))
@@ -135,18 +157,19 @@ def evaluate(y_trues, y_preds, show_curve=False):
         plt.title('Student-Teacher Model Evaluate - {} Dataset'.format(args['dataset']))
         plt.legend(loc="lower right")
         plt.show()
-        plt.savefig(os.path.join(config.RESULT_FOLDER, 'evaluate_{}_{}.png'.format(args['dataset'], args['object'])))
+        fig.savefig(os.path.join(config.RESULT_FOLDER, 'evaluate_{}_{}.png'.format(args['dataset'], args['object'])))
     return roc_area
 
 if __name__ == '__main__':
     
     if args['object'] == 'all':
-        gt_folder = '/media/chiennh2/01D6871FDE9C27C0/WorkSpace/Projects/STAD/data/{}/ground_truth'.format(args['dataset'])
-        test_folder = '/media/chiennh2/01D6871FDE9C27C0/WorkSpace/Projects/STAD/data/{}/test'.format(args['dataset'])
+        gt_folder = '../data/{}/ground_truth'.format(args['dataset'])
+        test_folder = '../data/{}/test'.format(args['dataset'])
 
         if args['teacher'] == 'resnet18':
-            techer_model_base = models.resnet18(pretrained=True)
-            teacher_model = nn.Sequential(*list(techer_model_base.children())[:-5]).to(config.DEVICE).eval()
+            # techer_model_base = models.resnet18(pretrained=True)
+            # teacher_model = nn.Sequential(*list(techer_model_base.children())[:-5]).to(config.DEVICE).eval()
+            teacher_model = TeacherModel().model
         else:
             teacher_model_path = os.path.join(config.MODEL_FOLDER, args['teacher'])
             teacher_model = torch.load(teacher_model_path)
@@ -158,8 +181,8 @@ if __name__ == '__main__':
         y_trues = get_ground_truth_dataset(gt_folder)
         y_preds = get_predict_dataset(test_folder, teacher_model, students_model, show_img=False)
     else:
-        gt_folder = '/media/chiennh2/01D6871FDE9C27C0/WorkSpace/Projects/STAD/data/{}/ground_truth/{}'.format(args['dataset'], args['object'])
-        test_folder = '/media/chiennh2/01D6871FDE9C27C0/WorkSpace/Projects/STAD/data/{}/test/{}'.format(args['dataset'], args['object'])
+        gt_folder = '../data/{}/ground_truth/{}'.format(args['dataset'], args['object'])
+        test_folder = '../data/{}/test/{}'.format(args['dataset'], args['object'])
 
         if args['teacher'] == 'resnet18':
             techer_model_base = models.resnet18(pretrained=True)
