@@ -32,7 +32,7 @@ For dataset 'grid' (https://www.mvtec.com/company/research/datasets/mvtec-ad/)
 ├── result  
 │   ├── grid_bent.png  
 │   └── grid_broken.png   
-└── src  
+├── src  
     ├── config.py  
     ├── demo.py  
     ├── evaluate.py  
