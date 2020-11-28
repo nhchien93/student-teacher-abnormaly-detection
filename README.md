@@ -12,9 +12,11 @@ python3 demo.py -img {path to image} -model {path to model}
 ```
 
 ## Result
+### Image
+![Result](result/demo_sample_all.png)
+### Accuracy
 For dataset 'grid' (https://www.mvtec.com/company/research/datasets/mvtec-ad/)
 ![ROC](result/demo_eval.png)
-![Result](result/demo_sample_all.png)
 
 ## Working folder structure
 ├── data   
