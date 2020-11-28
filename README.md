@@ -29,7 +29,7 @@ For dataset 'grid' (https://www.mvtec.com/company/research/datasets/mvtec-ad/)
 │   ├── model_0_grid.pth  
 │   └── model_1_grid.pth    
 ├── README.md  
-├── result 
+├── result  
 │   ├── grid_bent.png  
 │   └── grid_broken.png   
 └── src  
