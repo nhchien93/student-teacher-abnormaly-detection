@@ -14,7 +14,7 @@ python3 demo.py -img {path to image} -model {path to model}
 ## Result
 For dataset 'grid' (https://www.mvtec.com/company/research/datasets/mvtec-ad/)
 ![ROC](result/demo_eval.png)
-![Result](result/demo_sample.png)
+![Result](result/demo_sample_all.png)
 
 ## Working folder structure
 ├── data   
