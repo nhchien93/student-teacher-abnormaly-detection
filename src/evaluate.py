@@ -69,22 +69,11 @@ def get_predict(img_folder, teacher_model, students_model, mean=False, show_img=
             
             teacher_features, teacher_feature_mean = utils.predict(img=img, model=teacher_model, mean=True, device=config.DEVICE)
             teacher_features = teacher_features.to(config.DEVICE).detach().numpy()
-            teacher_feature_mean = teacher_feature_mean.to(config.DEVICE).detach().numpy()
             
             student_features, student_feature_mean = utils.predict(img=img, model=student_model, mean=True, device=config.DEVICE)
             student_features = student_features.to(config.DEVICE).detach().numpy()
-            student_feature_mean = student_feature_mean.to(config.DEVICE).detach().numpy()
             
-            teacher_feature_variances = np.abs(np.subtract(teacher_features, teacher_feature_mean))           
-            student_feature_variances = np.abs(np.subtract(student_features, student_feature_mean))
-                     
-            error_variances = np.abs(np.subtract(teacher_feature_variances, student_feature_variances))
-            error_variance_mean = np.mean(error_variances, axis=1)
-            
-            error_features = np.abs(np.subtract(teacher_features, student_features))
-            error_feature_mean = np.mean(error_features, axis=1)
-            
-            error_mask = error_feature_mean[0]
+            error_mask = utils.get_error(teacher_features, student_features)
             # error_feature_mean = np.abs(np.subtract(teacher_feature, student_feature))
             
             # features_student = utils.predict(img, student_model, mean, device=config.DEVICE)
