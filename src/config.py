@@ -4,6 +4,8 @@ import torch
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+DATA_FOLDER = '../data'
+
 RESULT_FOLDER = '../result'
 if not os.path.exists(RESULT_FOLDER):
     os.mkdir(RESULT_FOLDER)

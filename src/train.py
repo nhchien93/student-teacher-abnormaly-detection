@@ -14,10 +14,10 @@ from process_data import CustomDataset
 import config
 
 arg = argparse.ArgumentParser()
-arg.add_argument("-dataset", "--dataset", required=True, help="Choose dataset to train.")
-arg.add_argument("-student", "--student", default='resnet18', help="Choose dataset to train.")
-arg.add_argument("-n", "--n", required=True, help="Choose number of student to train.")
-arg.add_argument("-epoch", "--epoch", required=True, help="Choose epoch to train.")
+arg.add_argument("-d", "--dataset", default='grid', help="Choose dataset to train.")
+arg.add_argument("-s", "--student", default='resnet18', help="Choose dataset to train.")
+arg.add_argument("-n", "--num", default=3, type=int, help="Choose number of student to train.")
+arg.add_argument("-e", "--epoch", default=100, type=int, help="Choose epoch to train.")
 args = vars(arg.parse_args())
 
 transform = transforms.Compose([
@@ -27,8 +27,8 @@ transform = transforms.Compose([
     ])
 
 if __name__ == '__main__':
-    train_data_folder = '/media/chiennh2/01D6871FDE9C27C0/WorkSpace/Projects/STAD/data/{}/train/good'.format(args['dataset'])
-    val_data_folder = '/media/chiennh2/01D6871FDE9C27C0/WorkSpace/Projects/STAD/data/{}/test/good'.format(args['dataset'])
+    train_data_folder = '{}/{}/train/good'.format(config.DATA_FOLDER, args['dataset'])
+    val_data_folder = '{}/{}/test/good'.format(config.DATA_FOLDER, args['dataset'])
 
     train_dataset = CustomDataset(path_data=train_data_folder, transform=transform)
     train_dataloader = DataLoader(train_dataset, batch_size=1, shuffle=True, num_workers=0)
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     validate_dataset = CustomDataset(path_data=val_data_folder, transform=transform)
     val_dataloader = DataLoader(validate_dataset, batch_size=1, shuffle=True, num_workers=0)
 
-    num_students = int(args['n'])
+    num_students = args['num']
 
     teacher_model = TeacherModel().model
 
@@ -50,11 +50,11 @@ if __name__ == '__main__':
     training_loss_list = []
     validate_loss_list = []
 
-    EPOCHS = int(args['epoch'])
+    EPOCHS = args['epoch']
     for i, student_model in enumerate(students_model):
         training_loss_temp = []
         validate_loss_temp = []
-        for epoch in range(EPOCHS):  # loop over the dataset multiple times
+        for epoch in range(EPOCHS):
             training_loss = 0.0
             validate_loss = 0.0
             for i_batch_train, sample_batched in enumerate(train_dataloader):

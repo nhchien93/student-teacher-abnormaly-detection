@@ -13,16 +13,10 @@ from model import TeacherModel
 import config
 
 arg = argparse.ArgumentParser()
-arg.add_argument("-img", "--img", required=True, help="Choose image to predict.")
-arg.add_argument("-model", "--model", required=True, help="Choose model to predict.")
+arg.add_argument("-i", "--img", required=True, help="Choose image to predict.")
+arg.add_argument("-m", "--model", required=True, help="Choose model to predict.")
+arg.add_argument("-t", "--thresh", default=0.3, type=float, help="Choose threshold to predict.")
 args = vars(arg.parse_args())
-
-def get_result(img):
-    _, contours, _ = cv2.findContours(your_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    img = cv.imread('coins.png')
-    gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
-    ret, thresh = cv.threshold(gray,0,255,cv.THRESH_BINARY_INV+cv.THRESH_OTSU)
-    return unknown
 
 if __name__ == '__main__':
     teacher_model = TeacherModel().model
@@ -45,7 +39,7 @@ if __name__ == '__main__':
         err_temp = utils.get_error(teacher_features, student_features)
         errs.append(err_temp)
     err = sum(errs)/len(errs)
-    result = np.where((err<0.3), 0, 1)
+    result = np.where((err<args['thresh']), 0, 1)
     one_indices = [index for index, value in np.ndenumerate(result) if value == 1]
 
     ori_img = utils.load_image_(img_path, (128, 128))
@@ -68,5 +62,4 @@ if __name__ == '__main__':
     plt.colorbar(extend='both')
     
     plt.show()
-    # fig.savefig('../result/error_{}'.format(img_path.split('/')[-1]))
-    fig.savefig('../result/demo_sample_all.png')
+    fig.savefig('../result/{}_{}'.format(args['model'] ,img_path.split('/')[-1]))

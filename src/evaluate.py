@@ -74,19 +74,7 @@ def get_predict(img_folder, teacher_model, students_model, mean=False, show_img=
             student_features = student_features.to(config.DEVICE).detach().numpy()
             
             error_mask = utils.get_error(teacher_features, student_features)
-            # error_feature_mean = np.abs(np.subtract(teacher_feature, student_feature))
             
-            # features_student = utils.predict(img, student_model, mean, device=config.DEVICE)
-
-            # features_teacher = utils.predict(img, teacher_model, mean, device=config.DEVICE)
-
-            # features_teachernp = features_teacher.to(config.DEVICE).detach().numpy()
-            # features_studentnp = features_student.to(config.DEVICE).detach().numpy()
-
-            # error = np.abs(np.subtract(features_teachernp,features_studentnp))
-            # if mean == False:
-            #     error = np.mean(error, 1)
-            # error_mask = error_mask[0]
             y_preds_temp = np.concatenate((y_preds_temp, error_mask.flatten()))
             if show_img:
                 plt.figure()
@@ -156,8 +144,6 @@ if __name__ == '__main__':
         test_folder = '../data/{}/test'.format(args['dataset'])
 
         if args['teacher'] == 'resnet18':
-            # techer_model_base = models.resnet18(pretrained=True)
-            # teacher_model = nn.Sequential(*list(techer_model_base.children())[:-5]).to(config.DEVICE).eval()
             teacher_model = TeacherModel().model
         else:
             teacher_model_path = os.path.join(config.MODEL_FOLDER, args['teacher'])
