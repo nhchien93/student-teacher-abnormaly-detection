@@ -1,5 +1,5 @@
 # student-teacher-abnormaly-detection
-Implement Teacher-Student network for abnormaly detection.
+Implement Teacher-Student network for abnormaly detection. We used simple model architect for high accuracy.
 
 ## How to use
 
@@ -29,7 +29,7 @@ For dataset 'grid' (https://www.mvtec.com/company/research/datasets/mvtec-ad/)
 ├── README.md 
 ├── requirements.txt 
 ├── result       
-├── src  
+└── src  
     ├── config.py  
     ├── demo.py  
     ├── evaluate.py  
