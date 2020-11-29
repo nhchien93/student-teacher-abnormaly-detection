@@ -13,22 +13,22 @@ python3 demo.py -i {path to image} -m {path to model}
 
 * To train student neural network with your dataset.
 
-Make sure that your dataset directory has the same structure as:
-├── data   
-    ├── grid
-    │   ├── ground_truth
+Make sure that your dataset directory has the same structure as:    
+└── data   
+    ├── grid    
+    │   ├── ground_truth    
     │   │   ├── {type of defect 1}    
     │   │   │   ├── 000_mask.png    
-    │   │   │   └── 001_mask.png
-    │   │   └── {type of defect 2}
-    │   │       ├── 000_mask.png
-    │   │       └── 001_mask.png
+    │   │   │   └── 001_mask.png    
+    │   │   └── {type of defect 2}  
+    │   │       ├── 000_mask.png    
+    │   │       └── 001_mask.png    
     │   ├── test   
-    │   │   ├── {type of defect 1}
-    │   │   │   ├── 000.png   
-    │   │   │   └── 001.png
-    │   │   ├── {type of defect 2}
-    │   │   │   ├── 000.png
+    │   │   ├── {type of defect 1}  
+    │   │   │   ├── 000.png    
+    │   │   │   └── 001.png 
+    │   │   ├── {type of defect 2}  
+    │   │   │   ├── 000.png 
     │   │   │   └── 001.png  
     │   │   └── good    
     │   │       ├── 000.png   
@@ -36,7 +36,7 @@ Make sure that your dataset directory has the same structure as:
     │   └── train    
     │       └── good    
     │           ├── 000.png 
-    │           └── 001.png
+    │           └── 001.png 
     └── carpet
 ```
 cd src
