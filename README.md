@@ -45,10 +45,10 @@ python3 train.py -d {name of dataset} -n {number of student network} -e {number 
 
 ## Result
 ### Image
-![Result](result/demo_sample_all.png)
+![Result](result/demo_result.png)
 ### Accuracy
 For dataset 'grid' (https://www.mvtec.com/company/research/datasets/mvtec-ad/)
-![ROC](result/demo_eval.png)
+![ROC](result/demo_evaluate.png)
 
 ## Working folder structure
 ├── data   
