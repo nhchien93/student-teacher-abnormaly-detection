@@ -33,9 +33,15 @@ def predict(img, model, mean, device):
     return features, features_mean
 
 def get_error(teacher_features, student_features):
-    error = (np.subtract(teacher_features, student_features))**2
+    # Apply squared L2 norm
+    # error = (np.subtract(teacher_features, student_features))**2
+    # Apply L1 norm
+    error = np.abs(np.subtract(teacher_features, student_features))
     err_mean = np.mean(error, axis=1)
-    err = err_mean/np.max(err_mean)
+    err_max = np.max(err_mean)
+    err_min = np.min(err_mean)
+    err_aver = np.mean(err_mean)
+    err = ((err_mean - err_aver)/(2*(err_max - err_min))) + 0.5
     err = err[0]
     return err
 

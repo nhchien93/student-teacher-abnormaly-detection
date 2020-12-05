@@ -80,7 +80,7 @@ def get_predict(img_folder, teacher_model, students_model, mean=False, show_img=
                 plt.figure()
                 plt.imshow(error_mask)
                 plt.show()
-                plt.savefig('../result/diff.png')
+                plt.savefig(os.path.join(config.RESULT_FOLDER, 'diff.png'))
         y_preds_list.append(y_preds_temp)
     
     y_preds = sum(y_preds_list)/len(y_preds_list)

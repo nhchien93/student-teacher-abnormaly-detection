@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     plt.subplot(1, 3, 2)
     plt.imshow(ori_img_copy)
-    plt.title('Result Image')
+    plt.title('Result Image (p={})'.format(args['thresh']))
     
     plt.subplot(1, 3, 3)
     plt.imshow(err, cmap='jet')
@@ -62,4 +62,4 @@ if __name__ == '__main__':
     plt.colorbar(extend='both')
     
     plt.show()
-    fig.savefig('../result/{}_{}'.format(args['model'] ,img_path.split('/')[-1]))
+    fig.savefig(os.path.join(config.RESULT_FOLDER, 'demo_result.png'))

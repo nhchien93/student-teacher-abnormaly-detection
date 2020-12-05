@@ -9,13 +9,12 @@ from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 
 import utils
-from model import TeacherModel, StudentResnetModel
+from model import TeacherModel, StudentModel
 from process_data import CustomDataset
 import config
 
 arg = argparse.ArgumentParser()
 arg.add_argument("-d", "--dataset", default='grid', help="Choose dataset to train.")
-arg.add_argument("-s", "--student", default='resnet18', help="Choose dataset to train.")
 arg.add_argument("-n", "--num", default=3, type=int, help="Choose number of student to train.")
 arg.add_argument("-e", "--epoch", default=100, type=int, help="Choose epoch to train.")
 args = vars(arg.parse_args())
@@ -38,15 +37,15 @@ if __name__ == '__main__':
 
     num_students = args['num']
 
+    # Load teacher model
     teacher_model = TeacherModel().model
 
-    if args['student'] == 'resnet18':
-        students_model = [StudentResnetModel().model for i in range(num_students)]
-    else:
-        students_model = [StudentCustomModel().model for i in range(num_students)]
+    # Student model
+    num_group = 6
+    students_model = [StudentModel(num_blocks=num_blocks).model.to(config.DEVICE).eval() for i in range(num_students)]
 
     criterion = torch.nn.MSELoss()
-    optimizer = [optim.Adam(student_model.parameters(), lr=0.01) for student_model in students_model]
+    optimizer = [optim.Adam(student_model.parameters(), lr=0.001) for student_model in students_model]
     training_loss_list = []
     validate_loss_list = []
 
