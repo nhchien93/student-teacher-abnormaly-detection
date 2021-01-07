@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 import utils
 
 class CustomDataset(Dataset):
-    """Face Landmarks dataset."""
+    """MVTec dataset."""
 
     def __init__(self, path_data =  "grid/train/good", transform = None):
         self.path_data = path_data

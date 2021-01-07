@@ -62,4 +62,4 @@ if __name__ == '__main__':
     plt.colorbar(extend='both')
     
     plt.show()
-    fig.savefig(os.path.join(config.RESULT_FOLDER, 'demo_result.png'))
+    fig.savefig(os.path.join(config.RESULT_FOLDER, 'result.png'))
