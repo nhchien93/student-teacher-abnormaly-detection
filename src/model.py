@@ -1,5 +1,3 @@
-import os
-
 import torch
 import torch.nn as nn
 import torchvision.models as models
@@ -15,15 +13,25 @@ class TeacherModel():
             teacher_resnet18 = models.resnet18(pretrained=True)
             self.model = nn.Sequential(*list(teacher_resnet18.children())[:-5]).to(config.DEVICE).eval()
         except:
-            teacher = os.path.join(config.RESNET_FOLDER, 'teacher_resnet18.pth')
-            print('Can not download resnet18 pre-trained model.')
-            print('Use model: {}'.format(teacher))
-            self.model = torch.load(teacher, map_location=config.DEVICE)
+            print('Can not download pre-trained model.')
+            print('Use pre-trained model: {}'.format(os.path.join(config.RESNET_FOLDER, 'teacher_resnet18.pth')))
+            self.model = torch.load(os.path.join(config.RESNET_FOLDER, 'teacher_resnet18.pth'), map_location=config.DEVICE)
+
+class StudentResnetModel():
+    '''
+    Resnet18 model as student model.
+    '''
+    def __init__(self):
+        try:
+            student_resnet18 = models.resnet18(pretrained=False)
+            self.model = nn.Sequential(*list(student_resnet18.children())[:-5]).to(config.DEVICE).eval()
+        except:
+            print('Can not download pre-trained model.')
+            print('Use pre-trained model: {}'.format(os.path.join(config.RESNET_FOLDER, 'student_resnet18.pth')))
+            self.model = torch.load(os.path.join(config.RESNET_FOLDER, 'student_resnet18.pth'), map_location=config.DEVICE)
 
 class BasicBlock(nn.Module):
-    '''
-    Last group layer for Student model.
-    '''
+    
     def __init__(self, in_planes, planes, stride=1):
         super(BasicBlock, self).__init__()
         self.conv1 = nn.Conv2d(
@@ -45,7 +53,7 @@ class BasicBlock(nn.Module):
 
 class StudentModel(nn.Module):
 
-    def __init__(self, num_groups, group=BasicBlock):
+    def __init__(self, num_blocks, block=BasicBlock):
         super(StudentModel, self).__init__()
         self.in_planes = 64       
         self.model = nn.Sequential(
@@ -53,14 +61,14 @@ class StudentModel(nn.Module):
             nn.BatchNorm2d(num_features=64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False),
-            self._make_layer(group, 64, num_groups, stride=1)
+            self._make_layer(block, 64, num_blocks, stride=1)
         )
 
-    def _make_layer(self, group, planes, num_groups, stride):
-        strides = [stride] + [1]*(num_groups-1)
+    def _make_layer(self, block, planes, num_blocks, stride):
+        strides = [stride] + [1]*(num_blocks-1)
         layers = []
         for stride in strides:
-            layers.append(group(self.in_planes, planes, stride))
+            layers.append(block(self.in_planes, planes, stride))
         return nn.Sequential(*layers)
 
     def forward(self, x):

@@ -30,14 +30,17 @@ def predict(img, model, mean, device):
     features = model(img.to(device))
     if mean:
         features_mean = torch.mean(features, axis=1)
-    return features, features_mean
+        return features, features_mean
+    else:
+      return features
 
 def get_error(teacher_features, student_features):
     # Apply squared L2 norm
-    # error = (np.subtract(teacher_features, student_features))**2
+    error = (np.subtract(teacher_features, student_features))**2
     # Apply L1 norm
-    error = np.abs(np.subtract(teacher_features, student_features))
+    # error = np.abs(np.subtract(teacher_features, student_features))
     err_mean = np.mean(error, axis=1)
+    # err = err_mean/np.max(err_mean)
     err_max = np.max(err_mean)
     err_min = np.min(err_mean)
     err_aver = np.mean(err_mean)

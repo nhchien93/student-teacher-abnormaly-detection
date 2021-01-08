@@ -8,7 +8,7 @@ Implement Teacher-Student network for abnormaly detection. We used simple model 
 * To detect abnormal region on a image run the predict.py script.
 ```
 cd src
-python3 demo.py -i {path to image} -m {path to model}
+python3 demo.py -i {path to image} -m {name of model}
 ```
 
 * To train student neural network with your dataset.
