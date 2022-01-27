@@ -6,9 +6,9 @@ Implement Teacher-Student network for abnormaly detection. We used simple model 
 * Download dataset from [MVTec dataset](https://www.mvtec.com/company/research/datasets/mvtec-ad/)
 
 * To detect abnormal region on a image run the predict.py script.
-```
-cd src
-python3 demo.py -i {path to image} -m {name of model}
+```sh
+$ cd src
+$ python3 demo.py -i {path to image} -m {name of model}
 ```
 
 * To train student neural network with your dataset.
@@ -38,9 +38,9 @@ Make sure that your dataset directory has the same structure as:
     │           ├── 000.png 
     │           └── 001.png 
     └── carpet
-```
-cd src
-python3 train.py -d {name of dataset} -n {number of student network} -e {number of epoch}
+```sh
+$ cd src
+$ python3 train.py -d {name of dataset} -n {number of student network} -e {number of epoch}
 ```
 
 ## Result
