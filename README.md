@@ -1,4 +1,4 @@
-# student-teacher-abnormaly-detection
+# teacher-student-abnormaly-detection
 Implement Teacher-Student network for abnormaly detection. We used simple model architect (resnet18) for high accuracy.
 
 ## How to use
